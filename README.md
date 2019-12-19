@@ -43,6 +43,15 @@ var api = [0x00];
 indigo.write(callback, api);
 ```
 
+Check bluetooth state
+```js
+indigo.isAvailable();
+```
+
+Get device connected
+```js
+indigo.getDeviceConnected();
+```
 
 License
 ----
