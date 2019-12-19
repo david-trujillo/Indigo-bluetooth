@@ -23,6 +23,7 @@ const indigo = new Indigo();
 
 Request and connect device:
 ```js
+var prefix = ['Name1', 'Name1'];
 indigo.requestAndConnectDevice(prefix)
     .then(device => {
         //device connected
