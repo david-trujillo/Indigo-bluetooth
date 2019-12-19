@@ -2,7 +2,7 @@
 
 [![N|Solid](https://user-images.githubusercontent.com/7036665/71186116-96d03680-2274-11ea-939b-94eae023a874.png)](https://www.geeksme.com/)
 
-The Web Bluetooth API provides the ability to connect and interact with Bluetooth Low Energy peripherals.
+The [Web Bluetooth](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API) API provides the ability to connect and interact with Bluetooth Low Energy peripherals.
 
   - Request
   - Connect
