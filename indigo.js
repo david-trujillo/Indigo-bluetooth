@@ -1,6 +1,6 @@
 /* @preserve
-* Indigo v1.0.0 - 2012-12-01
-* (c) 2019 David Trujillo, (c) 2019 Geeksme
+* Indigo v1.0.1 - 2020-01-08
+* (c) 2020 David Trujillo, (c) 2020 Geeksme
 * Licensed MIT, GPL
 */
 
@@ -100,10 +100,13 @@
             });
         };
 
-        Indigo.prototype.requestAndConnectDevice = function (prefix) {
+        Indigo.prototype.requestAndConnectDevice = function (prefix, onConnectCallback = null) {
             var _this = this;
             return _this.requestDevice(prefix)
             .then(device => {
+                if(onConnectCallback != null){
+                    onConnectCallback();
+                }
                 return _this.connect(device)
                 .then(device => {
                     return device;
