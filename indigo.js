@@ -1,5 +1,5 @@
 /* @preserve
-* Indigo v1.0.1 - 2020-01-08
+* Indigo v1.0.2 - 2020-01-08
 * (c) 2020 David Trujillo, (c) 2020 Geeksme
 * Licensed MIT, GPL
 */
@@ -16,6 +16,8 @@
         root.Indigo = factory();
     }
 }(this, function() {
+
+    var LOG_TAG = "Indigo (e): "
 
     var SERVICE_UUID = 0xFFF0;
     var NOTIFY_UUID = "0000fff7-0000-1000-8000-00805f9b34fb";
@@ -127,7 +129,7 @@
 
             return this.gattConnect(device)
             .then(function (characteristics) {
-                console.log("found " + characteristics.length + " characteristic(s)");
+                console.log(LOG_TAG + "found " + characteristics.length + " characteristic(s)");
                 _this.notifyChar = characteristics.find(function (characteristic) {
                     return (characteristic.uuid === NOTIFY_UUID);
                 });
@@ -151,7 +153,7 @@
                 return _this.notifyChar.startNotifications();
             }).then(function () {
                 _this.notifyChar.addEventListener("characteristicvaluechanged", _this.handleNotification.bind(_this));
-                console.log("enabled control notifications");
+                console.log(LOG_TAG + "enabled control notifications");
                 _this.device = device;
                 return device;
             });
@@ -165,11 +167,11 @@
                 return device.gatt.connect();
             })
             .then(function (server) {
-                console.log("connected to gatt server");
+                console.log(LOG_TAG + "connected to gatt server");
                 return server.getPrimaryService(SERVICE_UUID);
             })
             .then(function (service) {
-                console.log("found DFU service" + service.getCharacteristics());
+                console.log(LOG_TAG + "found DFU service" + service.getCharacteristics());
                 return service.getCharacteristics();
             });
         }
@@ -184,12 +186,15 @@
                 bytes.push(b);
             }
 
+            console.log(LOG_TAG + bytes);
+
             if(this.notifyFns != null){
                 this.notifyFns(bytes);
                 this.notifyFns = null;
+            }else{
+                console.log(LOG_TAG + "notification handler is null");
             }
 
-            console.log("Indigo response: " + bytes);
         };
 
         Indigo.prototype.eventDisconnected = function () {
