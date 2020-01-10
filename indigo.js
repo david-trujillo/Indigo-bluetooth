@@ -1,5 +1,5 @@
 /* @preserve
-* Indigo v1.0.2 - 2020-01-08
+* Indigo v1.0.5 - 2020-01-10
 * (c) 2020 David Trujillo, (c) 2020 Geeksme
 * Licensed MIT, GPL
 */
@@ -189,8 +189,9 @@
             console.log(LOG_TAG + bytes);
 
             if(this.notifyFns != null){
-                this.notifyFns(bytes);
+                var callback = this.notifyFns;
                 this.notifyFns = null;
+                callback(bytes);
             }else{
                 console.log(LOG_TAG + "notification handler is null");
             }
@@ -209,11 +210,9 @@
 
         Indigo.prototype.write = function (callback, data) {
             this.notifyFns = callback;
-
             var bytes = new Uint8Array(API_MAX_LENGTH);
             bytes.set(data);
-            this.writeReadChar.writeValue(bytes);
-        };
+            this.writeReadChar.writeValue(bytes);        };
 
         Indigo.prototype.disconnect = function () {
             console.log("Device disconnected");
