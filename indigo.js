@@ -118,6 +118,9 @@
 
         Indigo.prototype.connect = function (device) {
             var _this = this;
+            _this.notifyChar = null;
+            _this.writeReadChar = null;
+            _this.device = null;
 
             device.addEventListener("gattserverdisconnected", function () {
                 _this.notifyChar = null;
@@ -189,9 +192,7 @@
             console.log(LOG_TAG + bytes);
 
             if(this.notifyFns != null){
-                var callback = this.notifyFns;
-                this.notifyFns = null;
-                callback(bytes);
+                this.notifyFns(bytes);
             }else{
                 console.log(LOG_TAG + "notification handler is null");
             }
