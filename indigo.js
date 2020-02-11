@@ -1,5 +1,5 @@
 /* @preserve
-* Indigo v1.0.5 - 2020-01-10
+* Indigo v1.0.6 - 2020-02-10
 * (c) 2020 David Trujillo, (c) 2020 Geeksme
 * Licensed MIT, GPL
 */
@@ -17,7 +17,9 @@
     }
 }(this, function() {
 
-    var LOG_TAG = "Indigo (e): "
+    var LOG_EVENT = "Indigo (e): "
+    var LOG_OUTPUT = "Indigo (->): "
+    var LOG_INPUT = "Indigo (<-): "
 
     var SERVICE_UUID = 0xFFF0;
     var NOTIFY_UUID = "0000fff7-0000-1000-8000-00805f9b34fb";
@@ -132,7 +134,7 @@
 
             return this.gattConnect(device)
             .then(function (characteristics) {
-                console.log(LOG_TAG + "found " + characteristics.length + " characteristic(s)");
+                console.log(LOG_EVENT + "found " + characteristics.length + " characteristic(s)");
                 _this.notifyChar = characteristics.find(function (characteristic) {
                     return (characteristic.uuid === NOTIFY_UUID);
                 });
@@ -156,7 +158,7 @@
                 return _this.notifyChar.startNotifications();
             }).then(function () {
                 _this.notifyChar.addEventListener("characteristicvaluechanged", _this.handleNotification.bind(_this));
-                console.log(LOG_TAG + "enabled control notifications");
+                console.log(LOG_EVENT + "enabled control notifications");
                 _this.device = device;
                 return device;
             });
@@ -170,11 +172,11 @@
                 return device.gatt.connect();
             })
             .then(function (server) {
-                console.log(LOG_TAG + "connected to gatt server");
+                console.log(LOG_EVENT + "connected to gatt server");
                 return server.getPrimaryService(SERVICE_UUID);
             })
             .then(function (service) {
-                console.log(LOG_TAG + "found DFU service" + service.getCharacteristics());
+                console.log(LOG_EVENT + "found DFU service" + service.getCharacteristics());
                 return service.getCharacteristics();
             });
         }
@@ -189,12 +191,12 @@
                 bytes.push(b);
             }
 
-            console.log(LOG_TAG + bytes);
+            console.log(LOG_INPUT + bytes);
 
             if(this.notifyFns != null){
                 this.notifyFns(bytes);
             }else{
-                console.log(LOG_TAG + "notification handler is null");
+                console.log(LOG_EVENT + "notification handler is null");
             }
 
         };
@@ -207,13 +209,16 @@
             var bytes = new Uint8Array(API_MAX_LENGTH);
             bytes.set(data);
             this.writeReadChar.writeValue(bytes);
+            console.log(LOG_OUTPUT + "(->)" + bytes);
         };
 
         Indigo.prototype.write = function (callback, data) {
             this.notifyFns = callback;
             var bytes = new Uint8Array(API_MAX_LENGTH);
             bytes.set(data);
-            this.writeReadChar.writeValue(bytes);        };
+            this.writeReadChar.writeValue(bytes);
+            console.log(LOG_OUTPUT + bytes);
+        };
 
         Indigo.prototype.disconnect = function () {
             console.log("Device disconnected");
