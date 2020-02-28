@@ -1,5 +1,5 @@
 /* @preserve
-* Indigo v1.0.6 - 2020-02-10
+* Indigo v1.0.7 - 2020-02-28
 * (c) 2020 David Trujillo, (c) 2020 Geeksme
 * Licensed MIT, GPL
 */
@@ -31,9 +31,12 @@
 
         Indigo.EVENT_DISCONNECTED = "disconnected";
 
-        function Indigo() {
+        function Indigo(delay) {
             var _this = this;
 
+            if (delay === void 0) { delay = 0; }
+
+            _this.delay = delay;
             _this.notifyChar = null;
             _this.writeReadChar = null;
             _this.device = null;
@@ -205,28 +208,37 @@
             this.dispatchEvent(Indigo.EVENT_DISCONNECTED, null);
         };
 
-        Indigo.prototype.write = function (data) {
-            var bytes = new Uint8Array(API_MAX_LENGTH);
-            bytes.set(data);
-            this.writeReadChar.writeValue(bytes);
-            console.log(LOG_OUTPUT + "(->)" + bytes);
+        Indigo.prototype._write = function (data) {
+            var _this = this;
+            return _this.delayPromise(_this.delay).then(function () {
+                var bytes = new Uint8Array(API_MAX_LENGTH);
+                bytes.set(data);
+                console.log(LOG_OUTPUT + bytes);
+                return _this.writeReadChar.writeValue(bytes);
+            });
         };
 
         Indigo.prototype.write = function (callback, data) {
-            this.notifyFns = callback;
-            var bytes = new Uint8Array(API_MAX_LENGTH);
-            bytes.set(data);
-            this.writeReadChar.writeValue(bytes);
-            console.log(LOG_OUTPUT + bytes);
+            var _this = this;
+            _this.notifyFns = callback;
+            return _this._write(data);
         };
 
         Indigo.prototype.disconnect = function () {
-            console.log("Device disconnected");
-            this.device.gatt.disconnect();
+            console.log(LOG_EVENT + "Device disconnected");
+            if(this.device != null && this.device.gatt != null){
+                this.device.gatt.disconnect();
+            }
 
             this.notifyChar = null;
             this.writeReadChar = null;
             this.device = null;
+        };
+
+        Indigo.prototype.delayPromise = function (delay) {
+            return new Promise(function (resolve) {
+                setTimeout(resolve, delay);
+            });
         };
 
         return Indigo;
